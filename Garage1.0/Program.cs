@@ -1,2 +1,8 @@
-﻿// See https://aka.ms/new-console-template for more information
-Console.WriteLine("Hello, World!");
+﻿using Garage1._0.Handler;
+using Garage1._0.UI;
+
+
+GarageHandler handler = new GarageHandler();
+ConsoleUI _ui = new ConsoleUI(handler);
+
+_ui.Run();
