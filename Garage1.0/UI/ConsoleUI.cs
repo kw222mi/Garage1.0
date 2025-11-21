@@ -1,6 +1,7 @@
 ﻿using Garage1._0.Handler;
 
 using System;
+using System.Reflection.Metadata;
 
 namespace Garage1._0.UI
 {
@@ -71,8 +72,11 @@ namespace Garage1._0.UI
         {
             Console.Clear();
             ShowHeader();
-            Console.WriteLine("[TODO] Här kommer vi senare fråga efter kapacitet och skapa garage.");
-            Console.WriteLine();
+            Console.WriteLine("Ange garagekapacitet (antal platser):.");
+            int capacity;
+            bool parse = Int32.TryParse(Console.ReadLine(), out capacity);
+            _handler.CreateGarage(capacity);
+            Console.WriteLine($"Garage skapat för {capacity} platser");
             Console.WriteLine("Tryck Enter för att återgå till menyn...");
             Console.ReadLine();
         }
