@@ -41,6 +41,18 @@ namespace Garage1._0.Handler
             return _garage.TryAdd(car);
         }
 
+        public IEnumerable<Vehicle> GetAllVehicles()
+        {
+            // If null return empty list
+            if (_garage is null)
+            {
+                return Enumerable.Empty<Vehicle>();
+            }
+
+            return _garage;
+        }
+
+
 
     }
 }

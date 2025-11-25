@@ -159,12 +159,33 @@ namespace Garage1._0.UI
         private void HandleListVehicles()
         {
             Console.Clear();
-            ShowHeader();
-            Console.WriteLine("[TODO] Här kommer vi senare att lista alla fordon i garaget.");
-            Console.WriteLine();
-            Console.WriteLine("Tryck Enter för att återgå till menyn...");
-            Console.ReadLine();
+            Console.WriteLine("=== Lista fordon ===\n");
+
+            if (!_handler.HasGarage)
+            {
+                Console.WriteLine("Inget garage finns. Skapa ett garage först.");
+                Pause();
+                return;
+            }
+
+            var vehicles = _handler.GetAllVehicles();
+
+            bool any = false;
+
+            foreach (var v in vehicles)
+            {
+                any = true;
+                Console.WriteLine(v);   // Call Vehicle.ToString()
+            }
+
+            if (!any)
+            {
+                Console.WriteLine("Garaget är tomt.");
+            }
+
+            Pause();
         }
+
 
         private int ReadInt(string prompt)
         {
