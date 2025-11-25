@@ -25,5 +25,23 @@ namespace Garage1._0.Handler
             return true;
         }
 
+        public bool AddVehicle(Vehicle vehicle)
+        {
+
+            if(_garage  == null) throw new ArgumentNullException(nameof(_garage));
+            bool isAdded = _garage.TryAdd(vehicle);
+            return isAdded;
+        }
+
+        public bool CreateAndAddCar(string regnr, string color, int weels, string model, string fueltype)
+        {
+            if (_garage is null) return false;
+
+            var car = new Car( regnr, color, weels, model, fueltype);
+            return _garage.TryAdd(car);
+        }
+
+
     }
 }
+

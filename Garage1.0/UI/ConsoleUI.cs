@@ -1,7 +1,9 @@
 ﻿using Garage1._0.Handler;
 
 using System;
+using System.Reflection;
 using System.Reflection.Metadata;
+using System.Text.RegularExpressions;
 
 namespace Garage1._0.UI
 {
@@ -38,6 +40,10 @@ namespace Garage1._0.UI
                         break;
 
                     case "3":
+                        HandleAddVehicle();
+                        break;
+
+                    case "0":
                         running = false;
                         break;
 
@@ -52,6 +58,50 @@ namespace Garage1._0.UI
             Console.ReadLine();
         }
 
+        private void HandleAddVehicle()
+        {
+            Console.Clear();
+            ShowHeader();
+
+            if (!_handler.HasGarage)
+            {
+                ShowError("Inget garage finns. Skapa ett garage först.");
+                Pause();
+                return;
+            }
+
+            Console.WriteLine("Vilken typ av fordon vill du lägga till?");
+            Console.WriteLine("1) Bil");
+            Console.WriteLine("2) Båt");
+            Console.WriteLine("3) Motorcykel");
+            Console.WriteLine("4) Buss");
+            Console.WriteLine("5) Flygplan");
+            Console.WriteLine();
+
+            Console.Write("Val: ");
+            string? choice = Console.ReadLine();
+
+            switch (choice)
+            {
+                case "1":
+                    HandleAddCar();
+                    break;
+                case "2":
+                    HandleAddBoat();
+                    break;
+                // osv
+                default:
+                    ShowError("Ogiltig fordonstyp.");
+                    Pause();
+                    break;
+            }
+        }
+
+        private void HandleAddBoat()
+        {
+            throw new NotImplementedException();
+        }
+
         private void ShowHeader()
         {
             Console.WriteLine("===================================");
@@ -64,7 +114,8 @@ namespace Garage1._0.UI
         {
             Console.WriteLine("1) Skapa nytt garage");
             Console.WriteLine("2) Lista fordon");
-            Console.WriteLine("3) Avsluta");
+            Console.WriteLine("3) Lägg till fordon");
+            Console.WriteLine("0) Avsluta");
             Console.WriteLine();
         }
 
@@ -81,6 +132,30 @@ namespace Garage1._0.UI
             Console.ReadLine();
         }
 
+        private void HandleAddCar()
+        {
+            Console.Clear();
+            ShowHeader();
+            Console.WriteLine("Lägg till bil");
+            Console.WriteLine();
+
+            string regNr = ReadString("Registreringsnummer: ");
+            string color = ReadString("Färg: ");
+            int wheels = ReadInt("Antal hjul: ");
+            string model = ReadString("Bilmodell: ");
+            string fueltype = ReadString("Bränsletyp: ");
+
+            bool success = _handler.CreateAndAddCar( regNr, color, wheels, model,  fueltype);
+
+            if (success)
+                Console.WriteLine("Bilen lades till i garaget.");
+            else
+                ShowError("Kunde inte lägga till bil (är garaget fullt?)");
+
+            Pause();
+        }
+
+
         private void HandleListVehicles()
         {
             Console.Clear();
@@ -90,5 +165,53 @@ namespace Garage1._0.UI
             Console.WriteLine("Tryck Enter för att återgå till menyn...");
             Console.ReadLine();
         }
+
+        private int ReadInt(string prompt)
+        {
+            while (true)
+            {
+                Console.Write(prompt);
+                string? input = Console.ReadLine();
+
+                if (int.TryParse(input, out int value))
+                {
+                    return value;
+                }
+
+                ShowError("Du måste skriva ett heltal.");
+            }
+        }
+
+        private string ReadString(string prompt)
+        {
+            while (true)
+            {
+                Console.Write(prompt);
+                string? input = Console.ReadLine();
+
+                if (!string.IsNullOrWhiteSpace(input))
+                {
+                    return input.Trim();
+                }
+
+                ShowError("Värdet kan inte vara tomt.");
+            }
+        }
+
+        private void ShowError(string message)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine(message);
+            Console.ResetColor();
+        }
+
+        private void Pause()
+        {
+            Console.WriteLine();
+            Console.WriteLine("Tryck Enter för att fortsätta...");
+            Console.ReadLine();
+        }
+
+
     }
 }

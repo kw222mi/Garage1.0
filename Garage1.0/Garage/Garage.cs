@@ -21,9 +21,27 @@ namespace Garage1._0.Garage
             _vehicles= new T[capacity];
         }
 
-        private int FindFreeParking () { 
-           throw new NotImplementedException ();
+        private int FindFreeParking () {
+            throw new NotImplementedException();
+
         }
+
+        public bool TryAdd(T item) {
+
+            if (item == null) throw new ArgumentNullException(nameof(item));
+
+            if (Count == Capacity) return false;
+
+            for (int i = 0; i < _vehicles.Length; i++) {
+                if (_vehicles[i] == null) {
+                    _vehicles[i] = item;
+                    Count++;
+                    return true;
+                        }
+            }
+            return false;
+        }
+
 
         public IEnumerator<T> GetEnumerator()
         {

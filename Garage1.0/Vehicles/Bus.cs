@@ -9,11 +9,11 @@ namespace Garage1._0.Vehicles
     internal class Bus : Vehicle
     {
         public int NumberOfSeats { get; set; }
-        public Bus(int regnr, int color, int weels, int model) : base(regnr, color, weels, model)
+        public Bus(string regnr, string color, int weels, string model) : base(regnr, color, weels, model)
         {
         }
 
-        public Bus(int regnr, int color, int weels, int model, int NumberOfSeats) : base(regnr, color, weels, model)
+        public Bus(string regnr, string color, int weels, string model, int NumberOfSeats) : base(regnr, color, weels, model)
         {
         }
     }
