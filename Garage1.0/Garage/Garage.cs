@@ -27,10 +27,6 @@ namespace Garage1._0.Garage
             _vehicles= new T[capacity];
         }
 
-        private int FindFreeParking () {
-            throw new NotImplementedException();
-
-        }
 
         public bool TryAdd(T item) {
 
@@ -66,7 +62,7 @@ namespace Garage1._0.Garage
                     return true;
                 }
             }
-            // can find a vehicle with regnr
+            // cant find a vehicle with regnr
             return false;
         }
 

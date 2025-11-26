@@ -45,6 +45,9 @@ namespace Garage1._0.UI
                     case "4":
                         HandleRemoveVehicle();
                         break;
+                    case "5":
+                        HandleSearchMenu();
+                        break;
 
                     case "0":
                         running = false;
@@ -61,35 +64,12 @@ namespace Garage1._0.UI
             Console.ReadLine();
         }
 
-        private void HandleRemoveVehicle()
-        {
-            Console.Clear();
-            ShowHeader();
-            if (!_handler.HasGarage)
-            {
-                ShowError("Inget garage finns. Skapa ett garage först.");
-                Pause();
-                return;
-            }
-            Console.WriteLine("Ta bort bil");
-            Console.WriteLine();
-
-            string regNr = ReadString("Registreringsnummer: ");
-            bool success = _handler.RemoveCar(regNr);
-
-            if (success)
-                Console.WriteLine("Bilen togs bort från garaget.");
-            else
-                ShowError("Kunde inte ta bort bil");
-
-            Pause();
-
-        }
-
+        
         private void HandleAddVehicle()
         {
             Console.Clear();
-            ShowHeader();
+            Console.Clear();
+            Console.WriteLine("=== Lägg till fordon ===\n");
 
             if (!_handler.HasGarage)
             {
@@ -144,9 +124,150 @@ namespace Garage1._0.UI
             Console.WriteLine("2) Lista fordon");
             Console.WriteLine("3) Lägg till fordon");
             Console.WriteLine("4) Ta bort fordon");
+            Console.WriteLine("5) Sök efter fordon");
             Console.WriteLine("0) Avsluta");
             Console.WriteLine();
         }
+
+        private void HandleSearchMenu()
+        {
+            while (true)
+            {
+                Console.Clear();
+                ShowHeader();
+
+                if (!_handler.HasGarage)
+                {
+                    ShowError("Inget garage finns. Skapa ett garage först.");
+                    Pause();
+                    return;
+                }
+
+                Console.WriteLine("=== Sök fordon ===\n");
+                Console.WriteLine("1) Snabbsök på registreringsnummer");
+                Console.WriteLine("2) Avancerad sökning (typ, färg, hjul, kombination)");
+                Console.WriteLine("0) Tillbaka till huvudmenyn");
+                Console.Write("\nVälj ett alternativ: ");
+
+                string? choice = Console.ReadLine()?.Trim();
+
+                switch (choice)
+                {
+                    case "1":
+                        HandleQuickSearchByRegNr();
+                        break;
+
+                    case "2":
+                        HandleAdvancedSearch();
+                        break;
+
+                    case "0":
+                        // Back to mainmenu
+                        return;
+
+                    default:
+                        ShowError("Ogiltigt menyval. Försök igen.");
+                        Pause();
+                        break;
+                }
+            }
+        }
+
+        private void HandleQuickSearchByRegNr()
+        {
+            Console.Clear();
+            ShowHeader();
+            Console.WriteLine("Snabbsök – registreringsnummer\n");
+
+            string regNr = ReadString("Ange registreringsnummer: ");
+
+            var vehicle = _handler.FindByRegNr(regNr);
+
+            if (vehicle is null)
+            {
+                ShowError("Inget fordon med det registreringsnumret hittades.");
+            }
+            else
+            {
+                Console.WriteLine("\nFordon hittades:\n");
+                Console.WriteLine(vehicle);
+            }
+
+            Pause();
+        }
+
+        private void HandleAdvancedSearch()
+        {
+            Console.Clear();
+            ShowHeader();
+            Console.WriteLine("Avancerad sökning\n");
+            Console.WriteLine("Lämna fält tomma om du inte vill filtrera på dem.\n");
+
+            // 1. Type of vehicle
+            Console.WriteLine("Fordonstyp (lämna tomt för alla typer):");
+            Console.WriteLine("1) Bil");
+            Console.WriteLine("2) Båt");
+            Console.WriteLine("3) Motorcykel");
+            Console.WriteLine("4) Buss");
+            Console.WriteLine("5) Flygplan");
+            Console.Write("Val (1–5 eller Enter för alla): ");
+
+            string? typeChoice = Console.ReadLine()?.Trim();
+
+            string? vehicleType = typeChoice switch
+            {
+                "1" => "Car",
+                "2" => "Boat",
+                "3" => "Motorcycle",
+                "4" => "Bus",
+                "5" => "Airplane",
+                _ => null // null = no filter
+            };
+
+            Console.WriteLine();
+            Console.WriteLine("Övriga filter (valfria — lämna tomt för att hoppa över):\n");
+
+            Console.Write("Registreringsnummer: ");
+            string? regInput = Console.ReadLine();
+            string? regNr = string.IsNullOrWhiteSpace(regInput) ? null : regInput.Trim();
+
+            Console.Write("Färg: ");
+            string? colorInput = Console.ReadLine();
+            string? color = string.IsNullOrWhiteSpace(colorInput) ? null : colorInput.Trim();
+
+            Console.Write("Antal hjul: ");
+            string? wheelsInput = Console.ReadLine();
+            int? wheels = null;
+            if (!string.IsNullOrWhiteSpace(wheelsInput) &&
+                int.TryParse(wheelsInput, out int w))
+            {
+                wheels = w;
+            }
+            Console.Write("Modell: ");
+            string? modelInput = Console.ReadLine();
+            string? model = string.IsNullOrWhiteSpace(modelInput) ? null : modelInput.Trim();
+
+            var results = _handler.AdvancedSearch(vehicleType, regNr, color, wheels, model);
+
+            Console.WriteLine();
+            Console.WriteLine("Sökresultat:\n");
+
+            bool any = false;
+            foreach (var v in results)
+            {
+                any = true;
+                Console.WriteLine(v);
+            }
+
+            if (!any)
+            {
+                Console.WriteLine("Inga fordon matchade sökkriterierna.");
+            }
+
+            Pause();
+        }
+
+
 
         private void HandleCreateGarage()
         {
@@ -164,8 +285,7 @@ namespace Garage1._0.UI
         private void HandleAddCar()
         {
             Console.Clear();
-            ShowHeader();
-            Console.WriteLine("Lägg till bil");
+            Console.WriteLine("=== Lägg till bil ===\n");
             Console.WriteLine();
 
             string regNr = ReadString("Registreringsnummer: ");
@@ -182,6 +302,31 @@ namespace Garage1._0.UI
                 ShowError("Kunde inte lägga till bil (är garaget fullt?)");
 
             Pause();
+        }
+
+        private void HandleRemoveVehicle()
+        {
+            Console.Clear();
+            Console.Clear();
+            Console.WriteLine("=== Ta bort fordon ===\n");
+            if (!_handler.HasGarage)
+            {
+                ShowError("Inget garage finns. Skapa ett garage först.");
+                Pause();
+                return;
+            }
+            Console.WriteLine();
+
+            string regNr = ReadString("Registreringsnummer: ");
+            bool success = _handler.RemoveCar(regNr);
+
+            if (success)
+                Console.WriteLine("Bilen togs bort från garaget.");
+            else
+                ShowError("Kunde inte ta bort bil");
+
+            Pause();
+
         }
 
 
@@ -215,6 +360,7 @@ namespace Garage1._0.UI
             Pause();
         }
 
+    
 
         private int ReadInt(string prompt)
         {
