@@ -48,7 +48,31 @@ namespace Garage1._0.Garage
             return false;
         }
 
-        //Not the best way to do it, but with linq
+        internal bool TryRemove(string regnr)
+        {
+            for (int i = 0; i < _vehicles.Length; i++)
+            {
+                var vehicle = _vehicles[i];
+
+                // skipp null 
+                if (vehicle is null)
+                    continue;
+
+                if (vehicle.RegistrationNumber == regnr)
+                {
+                    // Remove vehicle
+                    _vehicles[i] = null;
+                    Count--;
+                    return true;
+                }
+            }
+            // can find a vehicle with regnr
+            return false;
+        }
+
+
+        //Not the best way to do it, problem with null and search twice
+        /*
         internal bool TryRemove(string regnr)
         {
             var res = _vehicles.FirstOrDefault(item => item.RegistrationNumber == regnr);
@@ -67,6 +91,7 @@ namespace Garage1._0.Garage
                 }
                 return false;
             }
+        */
 
 
         public IEnumerator<T> GetEnumerator()
