@@ -42,6 +42,9 @@ namespace Garage1._0.UI
                     case "3":
                         HandleAddVehicle();
                         break;
+                    case "4":
+                        HandleRemoveVehicle();
+                        break;
 
                     case "0":
                         running = false;
@@ -56,6 +59,31 @@ namespace Garage1._0.UI
 
             Console.WriteLine("Programmet avslutas. Tryck Enter...");
             Console.ReadLine();
+        }
+
+        private void HandleRemoveVehicle()
+        {
+            Console.Clear();
+            ShowHeader();
+            if (!_handler.HasGarage)
+            {
+                ShowError("Inget garage finns. Skapa ett garage först.");
+                Pause();
+                return;
+            }
+            Console.WriteLine("Ta bort bil");
+            Console.WriteLine();
+
+            string regNr = ReadString("Registreringsnummer: ");
+            bool success = _handler.RemoveCar(regNr);
+
+            if (success)
+                Console.WriteLine("Bilen togs bort från garaget.");
+            else
+                ShowError("Kunde inte ta bort bil");
+
+            Pause();
+
         }
 
         private void HandleAddVehicle()
@@ -115,6 +143,7 @@ namespace Garage1._0.UI
             Console.WriteLine("1) Skapa nytt garage");
             Console.WriteLine("2) Lista fordon");
             Console.WriteLine("3) Lägg till fordon");
+            Console.WriteLine("4) Ta bort fordon");
             Console.WriteLine("0) Avsluta");
             Console.WriteLine();
         }

@@ -2,13 +2,19 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.Metrics;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+
+
 
 namespace Garage1._0.Garage
 {
-    public class Garage<T> : IEnumerable<T>
+    public class Garage<T> : IEnumerable<T> where T : Vehicle
+
     {
         public int Capacity { get;  }
         public int Count { get; private set; }
@@ -42,6 +48,26 @@ namespace Garage1._0.Garage
             return false;
         }
 
+        //Not the best way to do it, but with linq
+        internal bool TryRemove(string regnr)
+        {
+            var res = _vehicles.FirstOrDefault(item => item.RegistrationNumber == regnr);
+
+            if (res is null) return false;
+           
+            
+                for (int i = 0; i < _vehicles.Length; i++)
+                {
+                    if (_vehicles[i] == res)
+                    {
+                        _vehicles[i] = null;
+                        Count--;
+                        return true;
+                    }
+                }
+                return false;
+            }
+
 
         public IEnumerator<T> GetEnumerator()
         {
@@ -59,6 +85,9 @@ namespace Garage1._0.Garage
         {
             return GetEnumerator();
         }
-}
+
+       
+        
+    }
     }
 

@@ -3,6 +3,8 @@ using Garage1._0.Vehicles;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata;
+using System.Runtime.ConstrainedExecution;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -41,6 +43,15 @@ namespace Garage1._0.Handler
             return _garage.TryAdd(car);
         }
 
+        internal bool RemoveCar(string regNr)
+        {
+            if (_garage is null) return false;
+
+            else
+                return _garage.TryRemove(regNr);
+
+        }
+
         public IEnumerable<Vehicle> GetAllVehicles()
         {
             // If null return empty list
@@ -52,8 +63,7 @@ namespace Garage1._0.Handler
             return _garage;
         }
 
-
-
+        
     }
 }
 
