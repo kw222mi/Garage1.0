@@ -278,8 +278,21 @@ namespace Garage1._0.UI
             bool parse = Int32.TryParse(Console.ReadLine(), out capacity);
             _handler.CreateGarage(capacity);
             Console.WriteLine($"Garage skapat för {capacity} platser");
-            Console.WriteLine("Tryck Enter för att återgå till menyn...");
-            Console.ReadLine();
+           
+            Console.Write("Vill du fylla garaget med exempel-fordon? (J/N): ");
+            string? answer = Console.ReadLine()?.Trim().ToUpperInvariant();
+
+            if (answer == "J")
+            {
+                _handler.SeedGarage();
+                Console.WriteLine("\nGaraget har fyllts med exempel-fordon.");
+            }
+            else
+            {
+                Console.WriteLine("\nGaraget är tomt. Du kan lägga till fordon via menyn.");
+            }
+
+            Pause();
         }
 
         private void HandleAddCar()

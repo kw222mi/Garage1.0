@@ -8,6 +8,7 @@ using System.Runtime.ConstrainedExecution;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace Garage1._0.Handler
 {
@@ -78,9 +79,7 @@ namespace Garage1._0.Handler
 
                 if (string.Equals(item.RegistrationNumber, regNr, StringComparison.OrdinalIgnoreCase))
 
-
                     results.Add(item);
-
             }
 
             return results;
@@ -156,8 +155,42 @@ namespace Garage1._0.Handler
         }
 
 
+internal void SeedGarage()
+    {
+        if (_garage is null)
+            return;
 
+        var sampleVehicles = new List<Vehicle>
+    {
+        // Bil
+        new Car("ABC123", "Röd",    4, "Volvo V70", "bensin" ),
+        new Car("DEF456", "Blå",    4, "Saab 9-5",    "disel"),
+
+        // Båt
+        new Boat("BOAT01", "Vit",   0, "Yamarin 50", 30),
+
+        // Motorcykel
+        new Motorcycle("MC001", "Svart", 2, "Yamaha MT-07", 900),
+
+        // Buss
+        new Bus("BUS001", "Gul",   6, "Volvo 7900", 20),
+
+        // Flygplan
+        new Airplane("PLN001", "Vit", 3, "Boeing 737", 4)
+    };
+
+        foreach (var v in sampleVehicles)
+        {
+            // Try to add, break if full
+            if (!_garage.TryAdd(v))
+                break;
+        }
     }
+
+
+
+
+}
 }
 
 
