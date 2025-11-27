@@ -38,14 +38,17 @@ namespace Garage1._0.UI
                     case "2":
                         HandleListVehicles();
                         break;
-
                     case "3":
+                        HandleShowVehicleStats();
+                        break;
+
+                    case "4":
                         HandleAddVehicle();
                         break;
-                    case "4":
+                    case "5":
                         HandleRemoveVehicle();
                         break;
-                    case "5":
+                    case "6":
                         HandleSearchMenu();
                         break;
 
@@ -64,11 +67,54 @@ namespace Garage1._0.UI
             Console.ReadLine();
         }
 
-        
+        private void HandleShowVehicleStats()
+        {
+            Console.Clear();
+            ShowHeader();
+
+            if (!_handler.HasGarage)
+            {
+                ShowError("Inget garage finns. Skapa ett garage först.");
+                Pause();
+                return;
+            }
+
+            var vehicleCount = _handler.GetVehicleTypeCounts();
+
+            Console.WriteLine("=== Fordon per typ ===\n");
+
+            int totalNumber = 0;
+
+            string[] order = { "Car", "Motorcycle", "Boat", "Bus", "Airplane" };
+
+            foreach (var typeName in order)
+            {
+                vehicleCount.TryGetValue(typeName, out int countForType);
+                totalNumber += countForType;
+
+                string label = typeName switch
+                {
+                    "Car" => "Bilar",
+                    "Motorcycle" => "Motorcyklar",
+                    "Boat" => "Båtar",
+                    "Bus" => "Bussar",
+                    "Airplane" => "Flygplan",
+                    _ => typeName
+                };
+
+                Console.WriteLine($"{label}: {countForType}");
+            }
+
+            Console.WriteLine($"\nTotalt antal fordon: {totalNumber}");
+
+            Pause();
+        }
+
+
         private void HandleAddVehicle()
         {
             Console.Clear();
-            Console.Clear();
+            ShowHeader();
             Console.WriteLine("=== Lägg till fordon ===\n");
 
             if (!_handler.HasGarage)
@@ -122,9 +168,10 @@ namespace Garage1._0.UI
         {
             Console.WriteLine("1) Skapa nytt garage");
             Console.WriteLine("2) Lista fordon");
-            Console.WriteLine("3) Lägg till fordon");
-            Console.WriteLine("4) Ta bort fordon");
-            Console.WriteLine("5) Sök efter fordon");
+            Console.WriteLine("3) Visa fordonsstatistik");
+            Console.WriteLine("4) Lägg till fordon");
+            Console.WriteLine("5) Ta bort fordon");
+            Console.WriteLine("6) Sök efter fordon");
             Console.WriteLine("0) Avsluta");
             Console.WriteLine();
         }
@@ -267,8 +314,6 @@ namespace Garage1._0.UI
             Pause();
         }
 
-
-
         private void HandleCreateGarage()
         {
             Console.Clear();
@@ -278,7 +323,7 @@ namespace Garage1._0.UI
             bool parse = Int32.TryParse(Console.ReadLine(), out capacity);
             _handler.CreateGarage(capacity);
             Console.WriteLine($"Garage skapat för {capacity} platser");
-           
+
             Console.Write("Vill du fylla garaget med exempel-fordon? (J/N): ");
             string? answer = Console.ReadLine()?.Trim().ToUpperInvariant();
 
@@ -307,7 +352,7 @@ namespace Garage1._0.UI
             string model = ReadString("Bilmodell: ");
             string fueltype = ReadString("Bränsletyp: ");
 
-            bool success = _handler.CreateAndAddCar( regNr, color, wheels, model,  fueltype);
+            bool success = _handler.CreateAndAddCar(regNr, color, wheels, model, fueltype);
 
             if (success)
                 Console.WriteLine("Bilen lades till i garaget.");
@@ -373,7 +418,7 @@ namespace Garage1._0.UI
             Pause();
         }
 
-    
+
 
         private int ReadInt(string prompt)
         {

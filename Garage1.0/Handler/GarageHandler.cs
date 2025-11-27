@@ -65,6 +65,34 @@ namespace Garage1._0.Handler
             return _garage;
         }
 
+        internal Dictionary<string, int> GetVehicleTypeCounts()
+        {
+            Dictionary<string, int> count = new Dictionary<string, int>();
+            if (_garage is null)
+            {
+                return count;
+            }
+
+            foreach (var item in _garage)
+            {
+                if (item is null)
+                    continue;
+                else { 
+                    var type = item.GetType().Name;
+                    if (count.ContainsKey(type))
+                    {
+                        count[type]++;
+                    }
+                  
+                    else
+                                count.Add(type, 1);
+                        
+                   }
+            }
+            return count;
+
+        }
+
         internal IEnumerable<Vehicle> FindByRegNr(string regNr)
         {
             var results = new List<Vehicle>();
@@ -187,10 +215,8 @@ internal void SeedGarage()
         }
     }
 
-
-
-
-}
+        
+    }
 }
 
 
