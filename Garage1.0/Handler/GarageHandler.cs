@@ -8,7 +8,7 @@ using System.Runtime.ConstrainedExecution;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System.Collections.Generic;
+
 
 namespace Garage1._0.Handler
 {
@@ -29,33 +29,90 @@ namespace Garage1._0.Handler
             return true;
         }
 
-        public bool AddVehicle(Vehicle vehicle)
+        internal bool Add<VehicleType>(
+            string regNr,
+            string color,
+            int wheels,
+            string model,
+            Func<string, string, int, string, VehicleType> factoryMethod
+        )
+            where VehicleType : Vehicle
         {
+            if (_garage is null)
+                return false;
 
-            if (_garage == null) throw new ArgumentNullException(nameof(_garage));
-            bool isAdded = _garage.TryAdd(vehicle);
-            return isAdded;
+            // 1.Unique regnr?
+            if (RegistrationExists(regNr))
+                return false;
+
+            // 2. Create vehicle with factory method (delegat)
+            var vehicle = factoryMethod(regNr, color, wheels, model);
+
+            // 3. Add to garage
+            return _garage.TryAdd(vehicle);
         }
 
-        public bool CreateAndAddCar(string regnr, string color, int weels, string model, string fueltype)
+        public bool AddCar(string regNr, string color, int wheels, string model, string fueltype)
         {
-            if (_garage is null) return false;
-            if (RegistrationExists(regnr))
-            {
-                return false; 
-            }
-
-            var car = new Car(regnr, color, weels, model, fueltype);
-            return _garage.TryAdd(car);
+            return Add<Car>(
+        regNr,
+        color,
+        wheels,
+        model,
+        (r, c, w, m) => new Car(r, c, w, m, fueltype)
+    );
         }
 
-        internal bool RemoveCar(string regNr)
+        internal bool AddBoat(string regNr, string color, int wheels, string model, int length)
+        {
+            return Add<Boat>(
+                regNr,
+                color,
+                wheels,
+                model,
+                (r, c, w, m) => new Boat(r, c, w, m, length)
+            );
+        }
+
+        internal bool AddMotorcycle(string regNr, string color, int wheels, string model, int cylinderVolume)
+        {
+            return Add<Motorcycle>(
+                regNr,
+                color,
+                wheels,
+                model,
+                (r, c, w, m) => new Motorcycle(r, c, w, m, cylinderVolume)
+            );
+        }
+
+        internal bool AddAirplane(string regNr, string color, int wheels, string model, int numberOfEngines)
+        {
+            return Add<Airplane>(
+                regNr,
+                color,
+                wheels,
+                model,
+                (r, c, w, m) => new Airplane(r, c, w, m, numberOfEngines)
+            );
+        }
+
+        internal bool AddBus(string regNr, string color, int wheels, string model, int numberOfSeats)
+        {
+            return Add<Bus>(
+                regNr,
+                color,
+                wheels,
+                model,
+                (r, c, w, m) => new Bus(r, c, w, m, numberOfSeats)
+            );
+        }
+
+        internal bool RemoveVehicle(string regNr)
         {
             if (_garage is null) return false;
 
             else
                 return _garage.TryRemove(regNr);
-
         }
 
         public IEnumerable<Vehicle> GetAllVehicles()
@@ -81,17 +138,17 @@ namespace Garage1._0.Handler
             {
                 if (item is null)
                     continue;
-                else { 
+                else
+                {
                     var type = item.GetType().Name;
                     if (count.ContainsKey(type))
                     {
                         count[type]++;
                     }
-                  
+
                     else
-                                count.Add(type, 1);
-                        
-                   }
+                        count.Add(type, 1);
+                }
             }
             return count;
 
@@ -100,7 +157,7 @@ namespace Garage1._0.Handler
         private bool RegistrationExists(string regNr)
         {
             if (_garage is null)
-                return false; // inget garage = inget att kolla
+                return false;
 
             foreach (var vehicle in _garage)
             {
@@ -111,32 +168,30 @@ namespace Garage1._0.Handler
                                   regNr,
                                   StringComparison.OrdinalIgnoreCase))
                 {
-                    return true; // hittade ett fordon med samma regnr
+                    return true;
                 }
             }
 
-            return false; // ingen match hittad
+            return false;
         }
 
-        internal IEnumerable<Vehicle> FindByRegNr(string regNr)
+        internal Vehicle? FindByRegNr(string regNr)
         {
-            var results = new List<Vehicle>();
             if (_garage is null)
-                return Enumerable.Empty<Vehicle>();
+                return null;
 
             foreach (var item in _garage)
             {
-                // skipp null 
                 if (item is null)
                     continue;
 
                 if (string.Equals(item.RegistrationNumber, regNr, StringComparison.OrdinalIgnoreCase))
-
-                    results.Add(item);
+                    return item;
             }
 
-            return results;
+            return null; // No match
         }
+
 
         internal IEnumerable<Vehicle> AdvancedSearch(string? vehicleType, string? regNr, string? color, int? wheels, string? model)
         {
@@ -178,7 +233,6 @@ namespace Garage1._0.Handler
                         }
                     }
 
-
                     if (match && wheels.HasValue)
                     {
                         if (item.Wheels != wheels.Value)
@@ -186,7 +240,6 @@ namespace Garage1._0.Handler
                             match = false;
                         }
                     }
-
 
                     if (match && !string.IsNullOrWhiteSpace(model))
                     {
@@ -201,47 +254,37 @@ namespace Garage1._0.Handler
                         results.Add(item);
                     }
                 }
-
                 return results;
             }
-
         }
 
+        internal void SeedGarage()
+        {
+            if (_garage is null)
+                return;
 
-internal void SeedGarage()
+            var sampleVehicles = new List<Vehicle>
     {
-        if (_garage is null)
-            return;
 
-        var sampleVehicles = new List<Vehicle>
-    {
-        // Bil
         new Car("ABC123", "Röd",    4, "Volvo V70", "bensin" ),
         new Car("DEF456", "Blå",    4, "Saab 9-5",    "disel"),
 
-        // Båt
         new Boat("BOAT01", "Vit",   0, "Yamarin 50", 30),
 
-        // Motorcykel
         new Motorcycle("MC001", "Svart", 2, "Yamaha MT-07", 900),
 
-        // Buss
         new Bus("BUS001", "Gul",   6, "Volvo 7900", 20),
 
-        // Flygplan
         new Airplane("PLN001", "Vit", 3, "Boeing 737", 4)
     };
-
-        foreach (var v in sampleVehicles)
-        {
-            // Try to add, break if full
-            if (!_garage.TryAdd(v))
-                break;
+            foreach (var v in sampleVehicles)
+            {
+                // Try to add, break if full
+                if (!_garage.TryAdd(v))
+                    break;
+            }
         }
-    }
 
-        
+
     }
 }
-
-

@@ -29,7 +29,7 @@ namespace Garage1._0.Vehicles
 
         protected virtual string GetVehicleInfo()
         {
-            return $" RegistrationNumber: {RegistrationNumber} Color: {Color} Wheels: {Wheels} Model: {Model} "; ;
+            return $" Regnummer: {RegistrationNumber} Färg: {Color} Antal hjul: {Wheels} Modell: {Model} "; ;
         }
     }
 }

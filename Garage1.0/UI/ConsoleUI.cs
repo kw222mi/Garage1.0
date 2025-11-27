@@ -113,10 +113,7 @@ namespace Garage1._0.UI
 
         private void HandleAddVehicle()
         {
-            Console.Clear();
-            ShowHeader();
-            Console.WriteLine("=== Lägg till fordon ===\n");
-
+            Header(" Lägg till fordon ");
             if (!_handler.HasGarage)
             {
                 ShowError("Inget garage finns. Skapa ett garage först.");
@@ -143,26 +140,22 @@ namespace Garage1._0.UI
                 case "2":
                     HandleAddBoat();
                     break;
+                case "3":                   
+                    HandleAddMotorcycle();
+                    break;
+                case "4":
+                    HandleAddBus();
+                    break;
+                case "5":
+                    HandleAddAirplane();
+                    break;
                 // osv
                 default:
                     ShowError("Ogiltig fordonstyp.");
                     Pause();
                     break;
             }
-        }
-
-        private void HandleAddBoat()
-        {
-            throw new NotImplementedException();
-        }
-
-        private void ShowHeader()
-        {
-            Console.WriteLine("===================================");
-            Console.WriteLine("          Garage 1.0");
-            Console.WriteLine("===================================");
-            Console.WriteLine();
-        }
+        } 
 
         private void ShowMenu()
         {
@@ -180,8 +173,7 @@ namespace Garage1._0.UI
         {
             while (true)
             {
-                Console.Clear();
-                ShowHeader();
+                Header(" Sök fordon ");
 
                 if (!_handler.HasGarage)
                 {
@@ -190,7 +182,7 @@ namespace Garage1._0.UI
                     return;
                 }
 
-                Console.WriteLine("=== Sök fordon ===\n");
+              
                 Console.WriteLine("1) Snabbsök på registreringsnummer");
                 Console.WriteLine("2) Avancerad sökning (typ, färg, hjul, kombination)");
                 Console.WriteLine("0) Tillbaka till huvudmenyn");
@@ -222,10 +214,7 @@ namespace Garage1._0.UI
 
         private void HandleQuickSearchByRegNr()
         {
-            Console.Clear();
-            ShowHeader();
-            Console.WriteLine("Snabbsök – registreringsnummer\n");
-
+            Header("Snabbsök – registreringsnummer");
             string regNr = ReadString("Ange registreringsnummer: ");
 
             var vehicle = _handler.FindByRegNr(regNr);
@@ -245,9 +234,7 @@ namespace Garage1._0.UI
 
         private void HandleAdvancedSearch()
         {
-            Console.Clear();
-            ShowHeader();
-            Console.WriteLine("Avancerad sökning\n");
+            Header(" Avancerad sökning ");
             Console.WriteLine("Lämna fält tomma om du inte vill filtrera på dem.\n");
 
             // 1. Type of vehicle
@@ -316,11 +303,8 @@ namespace Garage1._0.UI
 
         private void HandleCreateGarage()
         {
-            Console.Clear();
-            ShowHeader();
-            Console.WriteLine("Ange garagekapacitet (antal platser):.");
-            int capacity;
-            bool parse = Int32.TryParse(Console.ReadLine(), out capacity);
+            Header(" Skapa nytt garage ");
+            int capacity = ReadInt("Ange garagekapacitet (antal platser): ");
             _handler.CreateGarage(capacity);
             Console.WriteLine($"Garage skapat för {capacity} platser");
 
@@ -340,19 +324,25 @@ namespace Garage1._0.UI
             Pause();
         }
 
-        private void HandleAddCar()
+        
+        private (string regNr, string color, int wheels, string model) ReadBaseVehicleInfo(string title)
         {
-            Console.Clear();
-            Console.WriteLine("=== Lägg till bil ===\n");
-            Console.WriteLine();
+            Header(title);
 
             string regNr = ReadString("Registreringsnummer: ");
             string color = ReadString("Färg: ");
             int wheels = ReadInt("Antal hjul: ");
-            string model = ReadString("Bilmodell: ");
+            string model = ReadString("Modell: ");
+
+            return (regNr, color, wheels, model);
+        }
+        private void HandleAddCar()
+        {            
+            var (regNr, color, wheels, model) = ReadBaseVehicleInfo(" Lägg till bil ");
+
             string fueltype = ReadString("Bränsletyp: ");
 
-            bool success = _handler.CreateAndAddCar(regNr, color, wheels, model, fueltype);
+            bool success = _handler.AddCar(regNr, color, wheels, model, fueltype);
 
             if (success)
                 Console.WriteLine("Bilen lades till i garaget.");
@@ -364,26 +354,97 @@ namespace Garage1._0.UI
             Pause();
         }
 
+
+        private void HandleAddMotorcycle()
+        {
+            var (regNr, color, wheels, model) = ReadBaseVehicleInfo(" Lägg till motorcykel ");
+
+            int cylinderVolume = ReadInt("Cylindervolym: ");
+
+            bool success = _handler.AddMotorcycle(regNr, color, wheels, model, cylinderVolume);
+            if (success)
+                Console.WriteLine("Motorcykeln lades till i garaget.");
+            else
+                ShowError("Kunde inte lägga till motorcykel. " +
+                  "Kontrollera att garaget inte är fullt " +
+                  "och att registreringsnumret inte redan används.");
+
+            Pause();
+        }
+
+        private void HandleAddBus()
+        {
+            var (regNr, color, wheels, model) = ReadBaseVehicleInfo(" Lägg till buss ");
+
+            int numberOfSeats = ReadInt("Antal sittplatser: ");
+
+            bool success = _handler.AddBus(regNr, color, wheels, model, numberOfSeats);
+
+            if (success)
+                Console.WriteLine("Bussen lades till i garaget.");
+            else
+                ShowError("Kunde inte lägga till buss. " +
+                          "Kontrollera att garaget inte är fullt " +
+                          "och att registreringsnumret inte redan används.");
+
+            Pause();
+        }
+
+        private void HandleAddAirplane()
+        {
+            var (regNr, color, wheels, model) = ReadBaseVehicleInfo(" Lägg till flygplan ");
+
+            int numberOfEngines = ReadInt("Antal motorer: ");
+
+            bool success = _handler.AddAirplane(regNr, color, wheels, model, numberOfEngines);
+
+            if (success)
+                Console.WriteLine("Flygplanet lades till i garaget.");
+            else
+                ShowError("Kunde inte lägga till flygplan. " +
+                          "Kontrollera att garaget inte är fullt " +
+                          "och att registreringsnumret inte redan används.");
+
+            Pause();
+        }
+
+        private void HandleAddBoat()
+        {
+            var (regNr, color, wheels, model) = ReadBaseVehicleInfo(" Lägg till båt ");
+
+            int length = ReadInt("Längd (fot): ");
+
+            bool success = _handler.AddBoat(regNr, color, wheels, model, length);
+
+            if (success)
+                Console.WriteLine("Båten lades till i garaget.");
+            else
+                ShowError("Kunde inte lägga till båt. " +
+                  "Kontrollera att garaget inte är fullt " +
+                  "och att registreringsnumret inte redan används.");
+
+            Pause();
+        }
+
+
         private void HandleRemoveVehicle()
         {
-            Console.Clear();
-            Console.Clear();
-            Console.WriteLine("=== Ta bort fordon ===\n");
+            Header(" Ta bort fordon ");
+         
             if (!_handler.HasGarage)
             {
                 ShowError("Inget garage finns. Skapa ett garage först.");
                 Pause();
                 return;
             }
-            Console.WriteLine();
 
             string regNr = ReadString("Registreringsnummer: ");
-            bool success = _handler.RemoveCar(regNr);
+            bool success = _handler.RemoveVehicle(regNr);
 
             if (success)
-                Console.WriteLine("Bilen togs bort från garaget.");
+                Console.WriteLine("Fordonet togs bort från garaget.");
             else
-                ShowError("Kunde inte ta bort bil");
+                ShowError("Kunde inte ta bort fordon");
 
             Pause();
 
@@ -392,8 +453,7 @@ namespace Garage1._0.UI
 
         private void HandleListVehicles()
         {
-            Console.Clear();
-            Console.WriteLine("=== Lista fordon ===\n");
+            Header(" Lista fordon ");
 
             if (!_handler.HasGarage)
             {
@@ -420,7 +480,21 @@ namespace Garage1._0.UI
             Pause();
         }
 
+        private void Header( string message)
+        {
+            Console.Clear();
+            ShowHeader();
+            Console.WriteLine($"=== {message} ===\n");
+            Console.WriteLine();
+        }
 
+        private void ShowHeader()
+        {
+            Console.WriteLine("===================================");
+            Console.WriteLine("          Garage 1.0");
+            Console.WriteLine("===================================");
+            Console.WriteLine();
+        }
 
         private int ReadInt(string prompt)
         {
@@ -467,7 +541,5 @@ namespace Garage1._0.UI
             Console.WriteLine("Tryck Enter för att fortsätta...");
             Console.ReadLine();
         }
-
-
     }
 }

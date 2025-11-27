@@ -15,12 +15,12 @@ namespace Garage1._0.Vehicles
 
         public Airplane(string regnr, string color, int weels, string model, int numberrOfEngines) : base(regnr, color, weels, model)
         {
-
+            NumberOfEngines = numberrOfEngines;
         }
 
         protected override string GetVehicleInfo()
         {
-            return base.GetVehicleInfo() + $", NumberOfEngines: {NumberOfEngines}";
+            return base.GetVehicleInfo() + $", Antal motorer: {NumberOfEngines}";
         }
 
     }
