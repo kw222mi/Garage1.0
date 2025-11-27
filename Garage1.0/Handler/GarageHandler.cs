@@ -40,6 +40,10 @@ namespace Garage1._0.Handler
         public bool CreateAndAddCar(string regnr, string color, int weels, string model, string fueltype)
         {
             if (_garage is null) return false;
+            if (RegistrationExists(regnr))
+            {
+                return false; 
+            }
 
             var car = new Car(regnr, color, weels, model, fueltype);
             return _garage.TryAdd(car);
@@ -91,6 +95,27 @@ namespace Garage1._0.Handler
             }
             return count;
 
+        }
+
+        private bool RegistrationExists(string regNr)
+        {
+            if (_garage is null)
+                return false; // inget garage = inget att kolla
+
+            foreach (var vehicle in _garage)
+            {
+                if (vehicle is null)
+                    continue;
+
+                if (string.Equals(vehicle.RegistrationNumber,
+                                  regNr,
+                                  StringComparison.OrdinalIgnoreCase))
+                {
+                    return true; // hittade ett fordon med samma regnr
+                }
+            }
+
+            return false; // ingen match hittad
         }
 
         internal IEnumerable<Vehicle> FindByRegNr(string regNr)

@@ -357,7 +357,9 @@ namespace Garage1._0.UI
             if (success)
                 Console.WriteLine("Bilen lades till i garaget.");
             else
-                ShowError("Kunde inte lägga till bil (är garaget fullt?)");
+                ShowError("Kunde inte lägga till bil. " +
+                  "Kontrollera att garaget inte är fullt " +
+                  "och att registreringsnumret inte redan används.");
 
             Pause();
         }
