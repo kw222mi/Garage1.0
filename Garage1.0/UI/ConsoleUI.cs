@@ -1,5 +1,4 @@
 ﻿using Garage1._0.Handler;
-
 using System;
 using System.Reflection;
 using System.Reflection.Metadata;
@@ -449,7 +448,6 @@ namespace Garage1._0.UI
             Pause();
 
         }
-
 
         private void HandleListVehicles()
         {

@@ -48,7 +48,7 @@ namespace Garage1._0.Garage
             return false;
         }
 
-        internal bool TryRemove(string regnr)
+        public bool TryRemove(string regnr)
         {
             for (int i = 0; i < _vehicles.Length; i++)
             {

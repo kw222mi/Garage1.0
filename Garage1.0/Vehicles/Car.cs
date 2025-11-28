@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Garage1._0.Vehicles
 {
-    internal class Car : Vehicle
+    public class Car : Vehicle
     {
         public string Fueltype { get; set; }
         public Car(string regnr, string color, int weels, string model) : base(regnr, color, weels, model)
