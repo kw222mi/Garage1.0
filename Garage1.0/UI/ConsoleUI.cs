@@ -1,20 +1,34 @@
 ﻿using Garage1._0.Handler;
 using System;
-using System.Reflection;
-using System.Reflection.Metadata;
-using System.Text.RegularExpressions;
 
 namespace Garage1._0.UI
 {
+    /// <summary>
+    /// Console-based user interface for the Garage application.
+    /// Responsible for showing menus, reading user input and delegating
+    /// all business logic to the GarageHandler.
+    /// </summary>
     public class ConsoleUI
     {
+        /// <summary>
+        /// Reference to the handler that encapsulates the garage logic.
+        /// </summary>
         private readonly GarageHandler _handler;
 
+        /// <summary>
+        /// Creates a new ConsoleUI instance using the given handler.
+        /// </summary>
+        /// <param name="handler">Handler responsible for garage operations.</param>
         public ConsoleUI(GarageHandler handler)
         {
             _handler = handler;
         }
 
+        /// <summary>
+        /// Starts the main loop of the application:
+        /// displays the main menu, reads user choices and dispatches to handlers
+        /// until the user chooses to exit.
+        /// </summary>
         public void Run()
         {
             bool running = true;
@@ -37,6 +51,7 @@ namespace Garage1._0.UI
                     case "2":
                         HandleListVehicles();
                         break;
+
                     case "3":
                         HandleShowVehicleStats();
                         break;
@@ -44,9 +59,11 @@ namespace Garage1._0.UI
                     case "4":
                         HandleAddVehicle();
                         break;
+
                     case "5":
                         HandleRemoveVehicle();
                         break;
+
                     case "6":
                         HandleSearchMenu();
                         break;
@@ -66,6 +83,10 @@ namespace Garage1._0.UI
             Console.ReadLine();
         }
 
+        /// <summary>
+        /// Shows a summary of the number of vehicles per type
+        /// and the total number of vehicles in the garage.
+        /// </summary>
         private void HandleShowVehicleStats()
         {
             Console.Clear();
@@ -84,6 +105,7 @@ namespace Garage1._0.UI
 
             int totalNumber = 0;
 
+            // Force a specific order when printing stats
             string[] order = { "Car", "Motorcycle", "Boat", "Bus", "Airplane" };
 
             foreach (var typeName in order)
@@ -109,7 +131,10 @@ namespace Garage1._0.UI
             Pause();
         }
 
-
+        /// <summary>
+        /// Top-level menu for adding a vehicle.
+        /// Lets the user choose a vehicle type and delegates to the appropriate handler.
+        /// </summary>
         private void HandleAddVehicle()
         {
             Header(" Lägg till fordon ");
@@ -139,7 +164,7 @@ namespace Garage1._0.UI
                 case "2":
                     HandleAddBoat();
                     break;
-                case "3":                   
+                case "3":
                     HandleAddMotorcycle();
                     break;
                 case "4":
@@ -154,8 +179,11 @@ namespace Garage1._0.UI
                     Pause();
                     break;
             }
-        } 
+        }
 
+        /// <summary>
+        /// Writes the main menu options to the console.
+        /// </summary>
         private void ShowMenu()
         {
             Console.WriteLine("1) Skapa nytt garage");
@@ -168,6 +196,10 @@ namespace Garage1._0.UI
             Console.WriteLine();
         }
 
+        /// <summary>
+        /// Sub-menu for searching vehicles.
+        /// Allows the user to choose between quick search and advanced search.
+        /// </summary>
         private void HandleSearchMenu()
         {
             while (true)
@@ -181,7 +213,6 @@ namespace Garage1._0.UI
                     return;
                 }
 
-              
                 Console.WriteLine("1) Snabbsök på registreringsnummer");
                 Console.WriteLine("2) Avancerad sökning (typ, färg, hjul, kombination)");
                 Console.WriteLine("0) Tillbaka till huvudmenyn");
@@ -200,7 +231,7 @@ namespace Garage1._0.UI
                         break;
 
                     case "0":
-                        // Back to mainmenu
+                        // Back to main menu
                         return;
 
                     default:
@@ -211,6 +242,9 @@ namespace Garage1._0.UI
             }
         }
 
+        /// <summary>
+        /// Quick search handler: finds a single vehicle by registration number.
+        /// </summary>
         private void HandleQuickSearchByRegNr()
         {
             Header("Snabbsök – registreringsnummer");
@@ -231,12 +265,17 @@ namespace Garage1._0.UI
             Pause();
         }
 
+        /// <summary>
+        /// Advanced search handler:
+        /// reads optional filters (type, reg.nr, color, wheels, model)
+        /// and forwards them to the handler.
+        /// </summary>
         private void HandleAdvancedSearch()
         {
             Header(" Avancerad sökning ");
             Console.WriteLine("Lämna fält tomma om du inte vill filtrera på dem.\n");
 
-            // 1. Type of vehicle
+            // Type of vehicle
             Console.WriteLine("Fordonstyp (lämna tomt för alla typer):");
             Console.WriteLine("1) Bil");
             Console.WriteLine("2) Båt");
@@ -276,6 +315,7 @@ namespace Garage1._0.UI
             {
                 wheels = w;
             }
+
             Console.Write("Modell: ");
             string? modelInput = Console.ReadLine();
             string? model = string.IsNullOrWhiteSpace(modelInput) ? null : modelInput.Trim();
@@ -300,6 +340,9 @@ namespace Garage1._0.UI
             Pause();
         }
 
+        /// <summary>
+        /// Creates a new garage and optionally seeds it with sample vehicles.
+        /// </summary>
         private void HandleCreateGarage()
         {
             Header(" Skapa nytt garage ");
@@ -323,7 +366,10 @@ namespace Garage1._0.UI
             Pause();
         }
 
-        
+        /// <summary>
+        /// Helper method to read the base properties that all vehicles share:
+        /// registration number, color, number of wheels and model.
+        /// </summary>
         private (string regNr, string color, int wheels, string model) ReadBaseVehicleInfo(string title)
         {
             Header(title);
@@ -335,8 +381,12 @@ namespace Garage1._0.UI
 
             return (regNr, color, wheels, model);
         }
+
+        /// <summary>
+        /// Handles user input for creating and adding a car.
+        /// </summary>
         private void HandleAddCar()
-        {            
+        {
             var (regNr, color, wheels, model) = ReadBaseVehicleInfo(" Lägg till bil ");
 
             string fueltype = ReadString("Bränsletyp: ");
@@ -347,13 +397,15 @@ namespace Garage1._0.UI
                 Console.WriteLine("Bilen lades till i garaget.");
             else
                 ShowError("Kunde inte lägga till bil. " +
-                  "Kontrollera att garaget inte är fullt " +
-                  "och att registreringsnumret inte redan används.");
+                          "Kontrollera att garaget inte är fullt " +
+                          "och att registreringsnumret inte redan används.");
 
             Pause();
         }
 
-
+        /// <summary>
+        /// Handles user input for creating and adding a motorcycle.
+        /// </summary>
         private void HandleAddMotorcycle()
         {
             var (regNr, color, wheels, model) = ReadBaseVehicleInfo(" Lägg till motorcykel ");
@@ -365,12 +417,15 @@ namespace Garage1._0.UI
                 Console.WriteLine("Motorcykeln lades till i garaget.");
             else
                 ShowError("Kunde inte lägga till motorcykel. " +
-                  "Kontrollera att garaget inte är fullt " +
-                  "och att registreringsnumret inte redan används.");
+                          "Kontrollera att garaget inte är fullt " +
+                          "och att registreringsnumret inte redan används.");
 
             Pause();
         }
 
+        /// <summary>
+        /// Handles user input for creating and adding a bus.
+        /// </summary>
         private void HandleAddBus()
         {
             var (regNr, color, wheels, model) = ReadBaseVehicleInfo(" Lägg till buss ");
@@ -389,6 +444,9 @@ namespace Garage1._0.UI
             Pause();
         }
 
+        /// <summary>
+        /// Handles user input for creating and adding an airplane.
+        /// </summary>
         private void HandleAddAirplane()
         {
             var (regNr, color, wheels, model) = ReadBaseVehicleInfo(" Lägg till flygplan ");
@@ -407,6 +465,9 @@ namespace Garage1._0.UI
             Pause();
         }
 
+        /// <summary>
+        /// Handles user input for creating and adding a boat.
+        /// </summary>
         private void HandleAddBoat()
         {
             var (regNr, color, wheels, model) = ReadBaseVehicleInfo(" Lägg till båt ");
@@ -419,17 +480,19 @@ namespace Garage1._0.UI
                 Console.WriteLine("Båten lades till i garaget.");
             else
                 ShowError("Kunde inte lägga till båt. " +
-                  "Kontrollera att garaget inte är fullt " +
-                  "och att registreringsnumret inte redan används.");
+                          "Kontrollera att garaget inte är fullt " +
+                          "och att registreringsnumret inte redan används.");
 
             Pause();
         }
 
-
+        /// <summary>
+        /// Handles removal of a vehicle based on registration number.
+        /// </summary>
         private void HandleRemoveVehicle()
         {
             Header(" Ta bort fordon ");
-         
+
             if (!_handler.HasGarage)
             {
                 ShowError("Inget garage finns. Skapa ett garage först.");
@@ -446,9 +509,11 @@ namespace Garage1._0.UI
                 ShowError("Kunde inte ta bort fordon");
 
             Pause();
-
         }
 
+        /// <summary>
+        /// Lists all vehicles currently parked in the garage.
+        /// </summary>
         private void HandleListVehicles()
         {
             Header(" Lista fordon ");
@@ -467,7 +532,7 @@ namespace Garage1._0.UI
             foreach (var v in vehicles)
             {
                 any = true;
-                Console.WriteLine(v);   // Call Vehicle.ToString()
+                Console.WriteLine(v);   // Calls Vehicle.ToString()
             }
 
             if (!any)
@@ -478,7 +543,11 @@ namespace Garage1._0.UI
             Pause();
         }
 
-        private void Header( string message)
+        /// <summary>
+        /// Common header helper: clears the console, shows the app header
+        /// and prints a section title.
+        /// </summary>
+        private void Header(string message)
         {
             Console.Clear();
             ShowHeader();
@@ -486,6 +555,9 @@ namespace Garage1._0.UI
             Console.WriteLine();
         }
 
+        /// <summary>
+        /// Writes the static application header / title.
+        /// </summary>
         private void ShowHeader()
         {
             Console.WriteLine("===================================");
@@ -494,6 +566,10 @@ namespace Garage1._0.UI
             Console.WriteLine();
         }
 
+        /// <summary>
+        /// Reads an integer value from the user, repeating the prompt
+        /// until a valid integer is entered.
+        /// </summary>
         private int ReadInt(string prompt)
         {
             while (true)
@@ -510,6 +586,10 @@ namespace Garage1._0.UI
             }
         }
 
+        /// <summary>
+        /// Reads a non-empty string from the user, trimming whitespace.
+        /// Repeats the prompt until a non-empty value is entered.
+        /// </summary>
         private string ReadString(string prompt)
         {
             while (true)
@@ -526,6 +606,9 @@ namespace Garage1._0.UI
             }
         }
 
+        /// <summary>
+        /// Shows an error message in red text.
+        /// </summary>
         private void ShowError(string message)
         {
             Console.ForegroundColor = ConsoleColor.Red;
@@ -533,6 +616,9 @@ namespace Garage1._0.UI
             Console.ResetColor();
         }
 
+        /// <summary>
+        /// Simple "press Enter to continue" pause helper.
+        /// </summary>
         private void Pause()
         {
             Console.WriteLine();
